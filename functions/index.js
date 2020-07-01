@@ -1,9 +1,12 @@
-let http = require('http');
-let static = require('node-static');
-let fileServer = new static.Server('.', { cache: 3600 });
-let path = require('path');
-let fs = require('fs');
-let debug = require('debug')('example:resume-upload');
+const functions = require('firebase-functions');
+// const admin = require('firebase-admin');
+// admin.initializeApp();
+const http = require('http');
+const static = require('node-static');
+const fileServer = new static.Server('.', { cache: 3600 });
+const path = require('path');
+const fs = require('fs');
+const debug = require('debug')('example:resume-upload');
 
 let uploads = Object.create(null);
 
@@ -21,7 +24,7 @@ function onUpload(req, res) {
   // let filePath = '/dev/null';
   // could use a real path instead, e.g.
   // ** edited
-  let filePath = __dirname + '/public/' + fileId;
+  let filePath = __dirname + '/tmp/' + fileId;
   console.log("filePath", filePath)
 
   debug("onUpload fileId: ", fileId);
@@ -107,14 +110,17 @@ function accept(req, res) {
   } else if (req.url == '/upload' && req.method == 'POST') {
     onUpload(req, res);
   } else {
-    // ** edited
     fileServer.serve(req, res, function (err, result) {
+      
+    // ** server side render
+      res.sendFile(__dirname + '/index.html')
+
       if (err) { // There was an error serving the file
-          console.error("Error serving " + request.url + " - " + err.message);
+          console.error("Error serving " + req.url + " - " + err.message);
  
           // Respond to the client
-          response.writeHead(err.status, err.headers);
-          response.end();
+          res.writeHead(err.status, err.headers);
+          res.end();
         }
     });
   }
@@ -122,13 +128,18 @@ function accept(req, res) {
 }
 
 
-
+// ** create a web service with firebase cloud functions
+exports.sws = functions.https.onRequest(accept);
 
 // -----------------------------------
 
-if (!module.parent) {
-  http.createServer(accept).listen(8000);
-  console.log('Server listening at port 8000');
-} else {
-  exports.accept = accept;
-}
+// if (!module.parent) {
+  // ** create local server
+  // http.createServer(accept).listen(8000);
+
+  // exports.sws = functions.https.onRequest(accept);
+  // console.log('Server working in google firebase cloud functions');
+// } else {
+  // exports.accept = accept;
+// }
+

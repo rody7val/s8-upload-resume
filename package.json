@@ -2,8 +2,8 @@
   "name": "s8-upload-resume",
   "version": "1.0.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/rody7val/s8-upload-resume.git"
+    "type": "git",
+    "url": "https://github.com/rody7val/s8-upload-resume.git"
   },
   "description": "stream web service",
   "main": "server.js",
@@ -13,8 +13,5 @@
   },
   "author": "rod7val@gmail.com",
   "license": "ISC",
-  "dependencies": {
-    "debug": "^4.1.1",
-    "node-static": "^0.7.11"
-  }
+  "dependencies": {}
 }
